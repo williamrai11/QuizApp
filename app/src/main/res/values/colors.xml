@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#264047</color>
+    <color name="colorPrimaryDark">#2C474E</color>
+    <color name="colorAccent">#D81B60</color>
+    <color name="activityBG">#c7c9cc</color>
+    <color name="oliveGreen">#AEB05D</color>
+    <color name="grey">#dfdfde</color>
+    <color name="btn_color">#02B3E4</color>
+    <color name="greyisColor">#898181</color>
+
+</resources>
