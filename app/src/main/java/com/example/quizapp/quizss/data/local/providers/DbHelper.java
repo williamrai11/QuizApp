@@ -1,4 +1,4 @@
-package com.example.quizapp.quizss.data;
+package com.example.quizapp.quizss.data.local.providers;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

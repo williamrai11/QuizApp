@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/MatchWidth"
+    android:layout_margin="10dp"
+    app:cardElevation="8dp"
+    app:cardCornerRadius="4dp">
+
+
+    <LinearLayout
+        style="@style/MatchOrientationVertical"
+        android:padding="15dp">
+
+        <Button
+            android:id="@+id/easy"
+            style="@style/difficultyChooseText"
+            android:text="Easy"
+
+            />
+
+
+
+
+        <Button
+            android:id="@+id/medium"
+            style="@style/difficultyChooseText"
+            android:text="Medium"
+            android:padding="10dp"
+            />
+
+
+
+
+        <Button
+            android:id="@+id/hard"
+            style="@style/difficultyChooseText"
+            android:text="Hard"
+            />
+
+
+    </LinearLayout>
+
+
+
+
+
+
+</android.support.v7.widget.CardView>

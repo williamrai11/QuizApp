@@ -32,14 +32,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.CatSel
             };
 
     private String [] descriptions;
-    private String  difficulty [] ={
-            "Easy",
-            "Hard",
-            "Hard",
-            "Medium",
-            "Hard"
-    };
-
 
     public RecyclerAdapter(Context context, List<String> csvEntries, String[] descriptions){
         inflater = LayoutInflater.from(context);
@@ -65,7 +57,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.CatSel
         holder.catName.setText(data);
         holder.catImage.setImageResource(icons[position]);
         holder.catDescp.setText(descriptions[position]);
-        holder.catLevel.setText(difficulty[position]);
 
     }
 
@@ -86,7 +77,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.CatSel
             catImage = itemView.findViewById(R.id.category_image);
             catName = itemView.findViewById(R.id.category_name);
             catDescp = itemView.findViewById(R.id.category_descp);
-            catLevel = itemView.findViewById(R.id.category_level);
             catBtn = itemView.findViewById(R.id.btn_start_quiz);
             view = itemView.findViewById(R.id.category_line);
             catBtn.setOnClickListener(this);

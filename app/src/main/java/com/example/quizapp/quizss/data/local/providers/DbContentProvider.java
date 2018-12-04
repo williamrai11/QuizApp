@@ -1,4 +1,4 @@
-package com.example.quizapp.quizss.data;
+package com.example.quizapp.quizss.data.local.providers;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
@@ -9,8 +9,8 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import static com.example.quizapp.quizss.data.DbContract.CONTENT_AUTHORITY;
-import static com.example.quizapp.quizss.data.DbContract.SCHEDULE_PATH;
+import static com.example.quizapp.quizss.data.local.providers.DbContract.CONTENT_AUTHORITY;
+import static com.example.quizapp.quizss.data.local.providers.DbContract.SCHEDULE_PATH;
 
 /**
  * Created by william on 3/21/18.

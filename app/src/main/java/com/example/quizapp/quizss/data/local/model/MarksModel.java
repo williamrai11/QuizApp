@@ -1,16 +1,43 @@
-package com.example.quizapp.quizss.data.model;
+package com.example.quizapp.quizss.data.local.model;
 
 public class MarksModel {
     private int score;
     private int incorrectAnswer;
     private String categoryName;
     private String date;
+    private String difficulty;
+    private long part;
 
-    public MarksModel(int score, int incorrectAnswer, String categoryName, String date) {
+    public MarksModel(int score, int incorrectAnswer, String categoryName, String date,String difficulty,long part) {
         this.score = score;
         this.incorrectAnswer = incorrectAnswer;
         this.categoryName = categoryName;
         this.date = date;
+        this.difficulty = difficulty;
+        this.part = part;
+    }
+
+    public MarksModel(int correctAns, int incorrectAnswer,String difficulty){
+        this.score = correctAns;
+        this.incorrectAnswer = incorrectAnswer;
+        this.difficulty = difficulty;
+
+    }
+
+    public String getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(String difficulty) {
+        this.difficulty = difficulty;
+    }
+
+    public long getPart() {
+        return part;
+    }
+
+    public void setPart(long part) {
+        this.part = part;
     }
 
     public int getScore() {

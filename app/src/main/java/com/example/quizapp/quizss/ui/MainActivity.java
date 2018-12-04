@@ -2,52 +2,48 @@ package com.example.quizapp.quizss.ui;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
+import android.util.DisplayMetrics;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 
 import com.example.quizapp.quizss.R;
-import com.example.quizapp.quizss.data.DbDao;
-import com.example.quizapp.quizss.data.DbHelper;
-import com.example.quizapp.quizss.data.model.QueryOneCsv;
+import com.example.quizapp.quizss.data.local.providers.DbDao;
 import com.example.quizapp.quizss.features.RecyclerAdapter;
-import com.example.quizapp.quizss.features.ResultPage.Result;
 import com.example.quizapp.quizss.features.VericalSpacingItemDecoration;
 
 
-import com.example.quizapp.quizss.features.quizpage.QuizPage;
-import com.example.quizapp.quizss.ui.ClickListener;
-import com.example.quizapp.quizss.ui.ScoreCard;
+import com.example.quizapp.quizss.features.quizpage.TestQuizPage;
+import com.example.quizapp.quizss.util.LogUtil;
+import com.example.quizapp.quizss.util.ToastUtil;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener,ClickListener {
+        implements NavigationView.OnNavigationItemSelectedListener, ClickListener {
 
     private RecyclerView recyclerView;
     private String TAG = "csvdatas";
     private List<String> categoriesLists;
     private SharedPreferences preferences;
     private SharedPreferences.Editor editor;
+    private DbDao dbDao;
+
 
     //private InterstitialAd mInterstitialAd;
 
@@ -65,23 +61,18 @@ public class MainActivity extends AppCompatActivity
         AdView adView = new AdView(this);
         adView.setAdSize(AdSize.BANNER);
         adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
-        AdRequest adRequest = new AdRequest.Builder() .build() ;
+        AdRequest adRequest = new AdRequest.Builder().build();
         adView.loadAd(adRequest);
 
        /* mInterstitialAd = new InterstitialAd(this);
         mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
         mInterstitialAd.loadAd(new AdRequest.Builder().build());
 */
-
-
-
-        preferences = getSharedPreferences("categoryName",0);
+        preferences = getSharedPreferences("categoryName", 0);
 
 
         recyclerView = findViewById(R.id.section_recycler_view);
-        DbDao dbDao = new DbDao(this);
-
-
+        dbDao = new DbDao(this);
 
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -96,7 +87,10 @@ public class MainActivity extends AppCompatActivity
         final String descriptions[] = getResources().getStringArray(R.array.descriptions);
         categoriesLists = dbDao.getAllCategory();
 
-        RecyclerAdapter adapter = new RecyclerAdapter(getApplicationContext(), categoriesLists,descriptions);
+        for (String names : categoriesLists) {
+            LogUtil.dLog("test", names);
+        }
+        RecyclerAdapter adapter = new RecyclerAdapter(getApplicationContext(), categoriesLists, descriptions);
         adapter.setClickListener(this);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
 
@@ -122,8 +116,8 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_scorecard){
-            Intent intent = new Intent(this,ScoreCard.class);
+        if (id == R.id.nav_scorecard) {
+            Intent intent = new Intent(this, ResultTwo.class);
             startActivity(intent);
         }
 
@@ -134,14 +128,68 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void itemClicked(int Position, String categoryName) {
-        Intent intent = new Intent(this,QuizPage.class);
         //intent.putExtra("categoryId",data.getId());
         //intent.putExtra("categoryName",categoryName);
 
+        createDialog(categoryName);
+
         editor = preferences.edit();
-        editor.putString("categoryName",categoryName);
+        editor.putString("categoryName", categoryName);
         editor.apply();
 
-        startActivity(intent);
+
     }
+
+
+    AlertDialog dialog;
+
+    //Dialog for choosing difficulty
+    private void createDialog(String categoryName) {
+
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View view = getLayoutInflater().inflate(R.layout.difficulty_choose_layout, null);
+
+        Button easy = view.findViewById(R.id.easy);
+        Button medium = view.findViewById(R.id.medium);
+        Button hard = view.findViewById(R.id.hard);
+
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        int width = metrics.widthPixels;
+        int height = metrics.heightPixels;
+        builder.setView(view);
+        dialog = builder.create();
+        dialog.setCancelable(true);
+        dialog.show();
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        dialog.getWindow().setLayout((6 * width) / 7, (3 * height) / 6);
+
+        easy.setOnClickListener((View v) -> {
+            runQuiz(categoryName,"easy");
+        });
+
+        medium.setOnClickListener((View v) -> {
+            runQuiz(categoryName,"medium");
+        });
+
+        hard.setOnClickListener((View v) -> {
+            runQuiz(categoryName,"hard");
+        });
+
+    }
+
+    private void runQuiz(String categoryName,String difficulty) {
+        //if (dbDao.checkForQuestions(categoryName,difficulty)) {
+
+            Intent intent = new Intent(this, TestQuizPage.class);
+            intent.putExtra("difficulty", difficulty);
+            dialog.dismiss();
+            startActivity(intent);
+
+            /* }else {
+            ToastUtil.shortToast(getApplicationContext(),"Hello");
+        }*/
+
+    }
+
 }

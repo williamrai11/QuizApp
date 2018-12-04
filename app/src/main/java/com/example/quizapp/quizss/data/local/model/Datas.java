@@ -1,4 +1,4 @@
-package com.example.quizapp.quizss.data.model;
+package com.example.quizapp.quizss.data.local.model;
 
 public class Datas {
     private String question;

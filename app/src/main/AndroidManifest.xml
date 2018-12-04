@@ -22,9 +22,11 @@
         <activity android:name=".features.ResultPage.Result" android:screenOrientation="portrait" />
         <activity android:name=".features.quizpage.QuizPage"  android:screenOrientation="portrait"/>
         <activity android:name=".ui.ScoreCard" android:screenOrientation="portrait"/>
-
+        <activity android:name=".features.quizpage.TestQuizPage"></activity>
+        <activity android:name=".features.ResultPage.FinishedPage"></activity>
+        <activity android:name=".ui.ResultTwo"></activity>
         <provider
-            android:name=".data.DbContentProvider"
+            android:name=".data.local.providers.DbContentProvider"
             android:authorities="com.example.quizapp.quizss.quizprovider"
             android:exported="false" />
 

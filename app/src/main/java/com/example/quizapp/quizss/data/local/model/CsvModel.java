@@ -1,7 +1,10 @@
-package com.example.quizapp.quizss.data.model;
+package com.example.quizapp.quizss.data.local.model;
 
 public class CsvModel {
+    private String index;
     private String section;
+    private String difficulty;
+    private String part;
     private String question;
     private String answer;
     private String explanation;
@@ -9,10 +12,13 @@ public class CsvModel {
     private String choiceTwo;
 
 
-    public CsvModel(String section, String question,
+    public CsvModel(String index,String section,String difficulty,String part,String question,
                     String answer,String explanation, String choiceOne,
                     String choiceTwo) {
+        this.index = index;
         this.section = section;
+        this.difficulty = difficulty;
+        this.part = part;
         this.question = question;
         this.answer = answer;
         this.explanation = explanation;
@@ -20,6 +26,29 @@ public class CsvModel {
         this.choiceTwo = choiceTwo;
     }
 
+    public void setIndex(String index) {
+        this.index = index;
+    }
+
+    public String getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(String difficulty) {
+        this.difficulty = difficulty;
+    }
+
+    public String getPart() {
+        return part;
+    }
+
+    public void setPart(String part) {
+        this.part = part;
+    }
+
+    public String getIndex() {
+        return index;
+    }
 
     public String getSection() {
         return section;

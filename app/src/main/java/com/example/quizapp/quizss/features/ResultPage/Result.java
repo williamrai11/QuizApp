@@ -9,10 +9,11 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.example.quizapp.quizss.features.quizpage.TestQuizPage;
 import com.example.quizapp.quizss.ui.MainActivity;
 import com.example.quizapp.quizss.R;
-import com.example.quizapp.quizss.data.DbDao;
-import com.example.quizapp.quizss.data.model.MarksModel;
+import com.example.quizapp.quizss.data.local.providers.DbDao;
+import com.example.quizapp.quizss.data.local.model.MarksModel;
 import com.example.quizapp.quizss.features.quizpage.QuizPage;
 import com.example.quizapp.quizss.util.DateUtil;
 
@@ -22,10 +23,11 @@ public class Result extends AppCompatActivity {
     private TextView correct, incorrect, attempted, score, remarks;
     private String TAG = "result";
     int cor = 0, scor = 0, idTracker = 0;
-    private ImageButton btn_again,btn_exit;
-    private SharedPreferences preferences,scorePref;
+    private ImageButton btn_again, btn_exit;
+    private SharedPreferences preferences, scorePref;
     private SharedPreferences.Editor scoreEditor;
-    private String categoryName;
+    private String categoryName, difficulty;
+    private long part;
 
     private DbDao dbDao;
 
@@ -37,17 +39,16 @@ public class Result extends AppCompatActivity {
         dbDao = new DbDao(this);
 
         preferences = getSharedPreferences("tracker", 0);
-        scorePref = getSharedPreferences("score",0);
+        scorePref = getSharedPreferences("score", 0);
         scoreEditor = scorePref.edit();
 
         idTracker = preferences.getInt("trackerId", 0);
         cor = getIntent().getIntExtra("score", 0);
         incorrectAnswer = getIntent().getIntExtra("incorrectAnswer", 0);
         categoryName = getIntent().getStringExtra("categoryName");
+        difficulty = getIntent().getStringExtra("difficulty");
+        part = getIntent().getLongExtra("part", 1);
 
-
-
-        Log.d(TAG, "score: " + score + " : " + incorrectAnswer);
 
         scor = 10 * cor;
         correct = findViewById(R.id.correct);
@@ -71,20 +72,20 @@ public class Result extends AppCompatActivity {
             remarks.setText("You are a brilliant  Quizzer ");
 
 
-
-        scoreEditor.putInt(categoryName,scor);
+        scoreEditor.putInt(categoryName, scor);
         scoreEditor.apply();
 
 
-        MarksModel marksModel = new MarksModel(scor,incorrectAnswer,categoryName,DateUtil.getCurrentDate());
+        MarksModel marksModel = new MarksModel(scor, incorrectAnswer, categoryName, DateUtil.getCurrentDate(), difficulty, part);
         dbDao.insert(marksModel);
-
 
 
         btn_again.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Result.this,QuizPage.class);
+                Intent intent = new Intent(Result.this, TestQuizPage.class);
+                intent.putExtra("categoryName", categoryName);
+                intent.putExtra("difficulty", difficulty);
                 startActivity(intent);
 
             }
@@ -93,7 +94,7 @@ public class Result extends AppCompatActivity {
         btn_exit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Result.this,MainActivity.class);
+                Intent intent = new Intent(Result.this, MainActivity.class);
                 startActivity(intent);
             }
         });

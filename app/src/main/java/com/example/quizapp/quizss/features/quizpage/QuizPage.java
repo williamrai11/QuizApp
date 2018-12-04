@@ -1,38 +1,31 @@
 package com.example.quizapp.quizss.features.quizpage;
 
 
-import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
 
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.quizapp.quizss.R;
-import com.example.quizapp.quizss.data.DbDao;
-import com.example.quizapp.quizss.data.DbHelper;
-import com.example.quizapp.quizss.data.model.InsertOneCsv;
-import com.example.quizapp.quizss.data.model.QueryOneCsv;
+import com.example.quizapp.quizss.data.local.providers.DbDao;
+import com.example.quizapp.quizss.data.local.model.InsertOneCsv;
+import com.example.quizapp.quizss.data.local.model.QueryOneCsv;
 import com.example.quizapp.quizss.features.ResultPage.Result;
+import com.example.quizapp.quizss.util.LogUtil;
 
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
 
 public class QuizPage extends AppCompatActivity {
@@ -119,22 +112,20 @@ public class QuizPage extends AppCompatActivity {
         datasIdLists = dbDao.getDatasId(categoryName);
         Log.d(TAG, "onCreates: " + datasIdLists.size());
         editor = preferences.edit();
+
         queryId = preferences.getInt(categoryName, 0);
 
-        Log.d(TAG, "queryId: " + queryId);
 
         if (queryId < datasIdLists.size()) {
             editor.putInt(categoryName, queryId);
             editor.apply();
-            Log.d(TAG, "if: " + categoryName);
         } else {
             editor.putInt(categoryName, 0);
             editor.apply();
-            Log.d(TAG, "else: " + categoryName);
         }
-        Log.d(TAG, "hehe: " + currentQuestion);
 
-        queryOneCsvsLists = dbDao.getAllDatas(categoryName);
+        queryOneCsvsLists = dbDao.getAllDatas(categoryName,"",0);
+
 
         if (!storeData) {
           /*  defaultEditor.putBoolean(categoryName, true);
@@ -216,7 +207,39 @@ public class QuizPage extends AppCompatActivity {
 
         txtExplainView.setText(explanation);
 
+   /* String rawQuery = "Select category,question,answer,explanation,choiceOne,choiceTwo from " +
+                "data where dataId == " + id + " AND category = \'" + categoryName + "\'";
 
+        DbHelper dbHelper = DbHelper.getInstance(context);
+        SQLiteDatabase sqLiteDatabase = dbHelper.getReadableDatabase();
+
+        Cursor cursor = sqLiteDatabase.rawQuery(rawQuery, null);
+        String section = "",difficulty="",part="", question = "", answer = "", explanation = "", choice_one = "", choice_two = "";
+
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                section = cursor.getString(cursor.getColumnIndex(DbContract.DataEntry.category));
+                difficulty = cursor.getString(cursor.getColumnIndex(DbContract.DataEntry.))
+                question = cursor.getString(cursor.getColumnIndex(DbContract.DataEntry.question));
+                answer = cursor.getString(cursor.getColumnIndex(DbContract.DataEntry.answer));
+                explanation = cursor.getString(cursor.getColumnIndex(DbContract.DataEntry.explanation));
+                choice_one = cursor.getString(cursor.getColumnIndex(DbContract.DataEntry.choiceOne));
+                choice_two = cursor.getString(cursor.getColumnIndex(DbContract.DataEntry.choiceTwo));
+
+                csvModels.add(new QueryOneCsv(
+                        section,
+                        difficulty,
+                        part,
+                        question,
+                        answer,
+                        explanation,
+                        choice_one,
+                        choice_two));
+
+            }
+        }
+        cursor.close();
+*/
         DisplayMetrics metrics = getResources().getDisplayMetrics();
         int width = metrics.widthPixels;
         int height = metrics.heightPixels;

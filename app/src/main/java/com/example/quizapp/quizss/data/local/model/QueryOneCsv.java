@@ -1,20 +1,40 @@
-package com.example.quizapp.quizss.data.model;
+package com.example.quizapp.quizss.data.local.model;
 
 public class QueryOneCsv {
     private String section;
+    private String difficulty;
+    private String part;
     private String question;
     private String answer;
     private String explanation;
     private String choice_one;
     private String choice_two;
 
-    public QueryOneCsv(String section, String question, String answer,  String explanation, String choice_one, String choice_two) {
+    public QueryOneCsv(String section,String difficulty,String part,String question, String answer,  String explanation, String choice_one, String choice_two) {
         this.section = section;
         this.question = question;
+        this.difficulty = difficulty;
+        this.part = part;
         this.answer = answer;
         this.explanation = explanation;
         this.choice_one = choice_one;
         this.choice_two = choice_two;
+    }
+
+    public String getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(String difficulty) {
+        this.difficulty = difficulty;
+    }
+
+    public String getPart() {
+        return part;
+    }
+
+    public void setPart(String part) {
+        this.part = part;
     }
 
     public String getSection() {

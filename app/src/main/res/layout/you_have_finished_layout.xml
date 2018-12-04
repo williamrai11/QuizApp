@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/text_name"
+        style="@style/headingText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:gravity="center"
+        android:text="@string/you_have_finished_the_quiz" />
+
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/score_cardview"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:layout_below="@+id/text_name"
+        android:layout_margin="15dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="10dp">
+
+        <LinearLayout
+            style="@style/MatchOrientationVertical">
+
+
+        <TextView
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Choose the Next Level"
+            android:gravity="center"
+            android:fontFamily="@font/blogger_sans_bold"
+            android:textSize="30sp"
+            />
+
+            <Button
+                android:id="@+id/easy"
+                style="@style/difficultyChooseText"
+                android:text="Easy"
+
+                />
+
+
+
+
+            <Button
+                android:id="@+id/medium"
+                style="@style/difficultyChooseText"
+                android:text="Medium"
+                android:padding="10dp"
+                />
+
+
+
+
+            <Button
+                android:id="@+id/hard"
+                style="@style/difficultyChooseText"
+                android:text="Hard"
+                />
+
+
+
+
+        </LinearLayout>
+
+
+    </android.support.v7.widget.CardView>
+
+
+
+
+
+    <ImageButton
+        android:id="@+id/exit"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/ic_logout"
+        android:layout_below="@+id/score_cardview"
+        android:layout_toRightOf="@id/divider"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        style="@style/Base.Widget.AppCompat.Button.Borderless"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/exit"
+        android:text="Exit"
+        android:layout_centerHorizontal="true"
+        style="@style/scoreStyle"
+        android:layout_marginTop="5dp"
+        />
+
+
+
+
+
+
+
+
+
+
+
+</RelativeLayout>

@@ -3,28 +3,34 @@ package com.example.quizapp.quizss.root;
 import android.app.Application;
 import android.content.ContentValues;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
 
 import com.example.quizapp.quizss.R;
-import com.example.quizapp.quizss.data.DbContract;
-import com.example.quizapp.quizss.data.model.CsvModel;
+import com.example.quizapp.quizss.data.local.providers.DbContract;
+import com.example.quizapp.quizss.data.local.model.CsvModel;
+import com.example.quizapp.quizss.data.local.providers.DbHelper;
 import com.facebook.stetho.Stetho;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.regex.Pattern;
 
 
 public class App extends Application {
 
-    private List<CsvModel> csvModelArrayList = new ArrayList<>();
-
+    /**
+     * This is the class which runs at first of initialization of APP
+     * In OnCreate Method a shared Preference is created for storing version code internally
+     * this is to check the version of the app for updating database and other stuff
+     * In every run csv data is read once and datas are stored or updated to database
+     * The sole purpose of this class is to store csv data to database
+     */
 
 
     @Override
@@ -34,115 +40,108 @@ public class App extends Application {
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor defaultEditor = sharedPreferences.edit();
-        boolean onlyOnce = sharedPreferences.getBoolean("onlyOnce", false);
+        int vCode = sharedPreferences.getInt("versionCode", 0);
+
+        DbHelper dbHelper = DbHelper.getInstance(getApplicationContext());
+        SQLiteDatabase sqLiteDatabase = dbHelper.getReadableDatabase();
 
 
-        if (!onlyOnce) {
-            List<CsvModel> list = null;
 
-            try {
-                list = readCsv();
-                Log.d("butt", "onCreate: "+list.size());
-                addCsv(list);
-            }catch (Exception e){
-                Log.d("root", "onCreate: "+e.getMessage());
+        try {
+            PackageInfo packageManager = getPackageManager().getPackageInfo(getPackageName(), 0);
+            int versionCode = packageManager.versionCode;
+            if (versionCode > vCode) {
+                Log.d("test", "onCreate: " + versionCode);
+
+                sqLiteDatabase.delete(DbContract.CsvEntry.TABLE_NAME,null,null);
+
+                ArrayList<CsvModel> csvModelArrayList = new ArrayList<>();
+                for (int i = 0; i < (readCsv().size() - 1); i++) {
+                    String[] datas = parseCSVLine(readCsv().get(i));
+                    Log.d("asshole", "onCreate: " + i + " " + readCsv().get(i));
+                    CsvModel csvModel = new CsvModel(
+                            datas[0],
+                            datas[1],
+                            datas[2],
+                            datas[3],
+                            datas[4],
+                            datas[5],
+                            datas[6],
+                            datas[7],
+                            datas[8]
+                    );
+                    csvModelArrayList.add(csvModel);
+                }
+
+                csvModelArrayList.remove(0);
+
+
+                try {
+                    Log.d("asd", "onCreate: " + csvModelArrayList.size());
+                    addCsv(csvModelArrayList);
+
+                } catch (Exception e) {
+                    Log.d("asshole", "onCreate: " + e.getMessage());
+                }
+                defaultEditor.putInt("versionCode", versionCode);
+                defaultEditor.apply();
+
+            } else {
+                Log.d("test", "onCreate: done already");
             }
 
 
-
-            defaultEditor.putBoolean("onlyOnce", true);
-            defaultEditor.apply();
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
         }
 
     }
 
     private void addCsv(List<CsvModel> list) {
         int counter = 0;
-        Log.d("asd", "addCsv: "+list.size());
+        Log.d("hello", "addCsv: ");
         ContentValues contentValues = new ContentValues();
         for (CsvModel datas : list) {
 
-            contentValues.put(DbContract.CsvEntry.section,datas.getSection());
-            contentValues.put(DbContract.CsvEntry.question,datas.getQuestion());
-            contentValues.put(DbContract.CsvEntry.answer,datas.getAnswer());
+            contentValues.put(DbContract.CsvEntry.id, datas.getIndex());
+            contentValues.put(DbContract.CsvEntry.section, datas.getSection());
+            contentValues.put(DbContract.CsvEntry.difficulty, datas.getDifficulty());
+            contentValues.put(DbContract.CsvEntry.part, datas.getPart());
+            contentValues.put(DbContract.CsvEntry.question, datas.getQuestion());
+            contentValues.put(DbContract.CsvEntry.answer, datas.getAnswer());
 
-            contentValues.put(DbContract.CsvEntry.explanation,datas.getExplanation());
-            contentValues.put(DbContract.CsvEntry.choiceOne,datas.getChoiceOne());
-            contentValues.put(DbContract.CsvEntry.choiceTwo,datas.getChoiceTwo());
+            contentValues.put(DbContract.CsvEntry.explanation, datas.getExplanation());
+            contentValues.put(DbContract.CsvEntry.choiceOne, datas.getChoiceOne());
+            contentValues.put(DbContract.CsvEntry.choiceTwo, datas.getChoiceTwo());
 
 
-            getContentResolver().insert(DbContract.CsvEntry.csvUri,contentValues);
+            getContentResolver().insert(DbContract.CsvEntry.csvUri, contentValues);
         }
     }
 
     //read data from csv
-    private List<CsvModel> readCsv() throws IOException {
-        InputStream inputStream = getResources().openRawResource(R.raw.data);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-        String line;
-
-        Log.d("butt", "readCsv: "+reader.readLine());
+    private ArrayList<String> readCsv() {
 
 
-/*        while ((line = reader.readLine()) != null) {
-            //Split by ','
-
-           line.replaceAll("\"","");
-            Log.d("haha", "readCsv: "+line.toString());
-            String[] tokens = line.split(",");
+        Scanner scanner = new Scanner(getResources().openRawResource(R.raw.data));
+        scanner.useDelimiter(Pattern.compile(";"));
 
 
-            //Read Data
-            //tokens[0] : Part , tokern[1] = Chapter, token[2] = Section, token[3] = Questions
-            //token[4] : Answer , token[5] = Difficulty, token[6] = Explanation, token[7] = ChoiceOne, token[8] = ChoiceTwo
-            //token[9]: mark
-            CsvModel csvModel = new CsvModel(
-                    tokens[0],
-                    tokens[1],
-                    tokens[2],
-                    tokens[3],
-                    tokens[4],
-                    tokens[5]
-            );
+        ArrayList<String> arrayList = new ArrayList<>();
 
-            csvModelArrayList.add(csvModel);
-            Log.d("butt", "readCsv: "+csvModelArrayList);
+        while (scanner.hasNext()) {
+            String wholeString = scanner.next();
+
+            arrayList.add(wholeString);
+
+        }
 
 
-
-
-        }*/
-
-
-        while (( line = reader.readLine()) != null) {
-            String[] tokens = parseCSVLine(line);
-
-                CsvModel csvModel = new CsvModel(
-                        tokens[0],
-                        tokens[1],
-                        tokens[2],
-                        tokens[3],
-                        tokens[4],
-                        tokens[5]
-
-                );
-                csvModelArrayList.add(csvModel);
-
-            }
-
-
-
-
-
-
-
-        //csvModelArrayList.remove(0);
-
-        return csvModelArrayList;
+        return arrayList;
     }
 
 
-    public  String[] parseCSVLine(String line) {
+    public String[] parseCSVLine(String line) {
         // Create a pattern to match breaks
         Pattern p =
                 Pattern.compile(",(?=([^\"]*\"[^\"]*\")*(?![^\"]*\"))");
